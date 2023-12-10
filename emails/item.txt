@@ -1,0 +1,2 @@
+    - {{ rent.return_date }} : {{ book.title }} {{ book.num }} ({{book._id}})
+

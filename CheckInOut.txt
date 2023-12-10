@@ -1,0 +1,24 @@
+HKMCC 도서관에서 {{ user.name }} 님께 이용 내역을 확인드립니다.
+
+ * 이용자 번호 : {{ user.id }}
+
+{% if checkin %}
+ * 반납하신 책(들):
+{{ checkin }}
+{% endif %}
+{% if checkout %}
+ * 빌리신 책(들):
+{{ checkout }}
+{% endif %}
+{% if reserves %}
+* 예약하신 책(들):
+{{ reserves }}
+{% endif %}
+{% if delayed %}
+* 연체된 책(들):
+{{ delayed }}
+{% endif %}
+이메일 수신을 원치 않으실 경우 도서관에 알려주시거나 hkmcc.library@gmail.com 으로 메일 주시면 조치해 드리겠습니다.
+감사합니다.
+
+HKMCC 도서관

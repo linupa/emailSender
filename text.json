@@ -1,0 +1,38 @@
+{
+    "en": {
+        "generalMessage": "HKMCC Library General notice",
+        "courtesyNotice": "HKMCC Library Courtesy notice",
+        "rentalHistory": "HKMCC Library Rental history",
+        "clear": "Clear",
+        "all": "All",
+        "renters": "Renters",
+        "recentUser": "Recent User",
+        "preview": "Preview",
+        "send": "Send",
+        "subject1": "",
+        "subject2": "",
+        "subject3": "",
+        "prev": "Prev",
+        "next": "Next",
+        "confirm": "Confirm",
+        "askToConfirm": "Send {} messages?"
+    },
+    "kr": {
+        "generalMessage": "HKMCC 도서관 알림",
+        "courtesyNotice": "HKMCC 도서관 반납 안내",
+        "rentalHistory": "HKMCC 도서관 이용현황",
+        "clear": "삭제",
+        "all": "전체",
+        "renters": "대출",
+        "recentUser": "최근이용",
+        "preview": "미리보기",
+        "send": "보내기",
+        "subject1": "HKMCC Library 공지",
+        "subject2": "HKMCC Library 반납 안내",
+        "subject3": "HKMCC Library 이용현황",
+        "prev": "이전",
+        "next": "다음",
+        "confirm": "확인",
+        "askToConfirm": "{} 개의 메일을 전송합니다"
+    }
+}

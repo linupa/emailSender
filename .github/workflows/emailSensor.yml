@@ -27,3 +27,17 @@ jobs:
                 MAIL_TOKEN: ${{ secrets.MAIL_TOKEN }}
 
               run: python actionTest.py
+
+            - name: test notice sender
+              env:
+                MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
+                MAIL_TOKEN: ${{ secrets.MAIL_TOKEN }}
+
+              run: python sender.py notice
+
+            - name: test checkout sender
+              env:
+                MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
+                MAIL_TOKEN: ${{ secrets.MAIL_TOKEN }}
+
+              run: python sender.py checkout
