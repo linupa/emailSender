@@ -24,4 +24,6 @@ jobs:
             - name: execute script
               env:
                 MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
+                MAIL_TOKEN: ${{ secrets.MAIL_TOKEN }}
+
               run: python actionTest.py
