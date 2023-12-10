@@ -22,4 +22,6 @@ jobs:
               run: pip install -r requirements.txt
 
             - name: execute script
+              env:
+                MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
               run: python actionTest.py
