@@ -1,9 +1,8 @@
-name: email-sender
+name: check-email-sender
 on: push
-#on: schedule:
-#    - cron: '0 1 * * *'
+
 jobs:
-    run-email-sender:
+    check-sender-commit:
         runs-on: ubuntu-latest
         steps:
             - name: checker repo
@@ -20,10 +19,23 @@ jobs:
             - name: install python packages
               run: pip install -r requirements.txt
 
-            - name: execute timeChecker script
+            - name: execute script
               env:
                 MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
                 MAIL_TOKEN: ${{ secrets.MAIL_TOKEN }}
 
-              run: python timeChecker.py
+              run: python actionTest.py
 
+            - name: test notice sender
+              env:
+                MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
+                MAIL_TOKEN: ${{ secrets.MAIL_TOKEN }}
+
+              run: python sender.py notice
+
+            - name: test checkout sender
+              env:
+                MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
+                MAIL_TOKEN: ${{ secrets.MAIL_TOKEN }}
+
+              run: python sender.py checkout
