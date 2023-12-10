@@ -1,7 +1,8 @@
 name: email-sender
-on:
-    schedule:
-        - cron: '0 * * * *'
+on: push
+
+#    schedule:
+#        - cron: '0 * * * *'
 jobs:
     run-marc-sample:
         runs-on: ubuntu-latest
