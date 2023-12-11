@@ -2,6 +2,7 @@ name: email-sender
 on: push
 #on: schedule:
 #    - cron: '0 1 * * *'
+
 jobs:
     run-email-sender:
         runs-on: ubuntu-latest
@@ -24,6 +25,7 @@ jobs:
               env:
                 MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
                 MAIL_TOKEN: ${{ secrets.MAIL_TOKEN }}
+                PAUSE: ${{ env.PAUSE }}
 
               run: python timeChecker.py
 

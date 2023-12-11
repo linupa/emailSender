@@ -85,7 +85,7 @@ if __name__ == '__main__':
   db = MongoDB(connection)
 
 
-  print(f"Msg type: {msgType}")
+  print(f"Msg type: {msgType} Test:{test}")
   msgType = msgTypes[msgType]
   userList= dict()
 
