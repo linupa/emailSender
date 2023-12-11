@@ -38,6 +38,7 @@ class MongoDB:
     def getRecentDueDate(self, today, interval):
         userList = dict()
         refDate = str(today + timedelta(days= interval))
+        print(f"Get recent due data ref: {refDate}")
         for key in self.mdRent:
             rent = self.mdRent[key]
             if rent["state"] not in {1, 3}:
@@ -58,12 +59,14 @@ class MongoDB:
                 userInfo["rent"] = [{'book': self.mdBooks[book], 'rent': rent}]
                 userList[user] = userInfo
 
+        print(f"Found {len(userList)} users")
         return userList
 
     def getRecentActivity(self, today, interval):
         userList = dict()
         refDate = str(today - timedelta(days= interval))
         todayDate = str(today)
+        print(f"Get recent activity ref: {refDate}")
         for key in self.mdRentLog:
             rent = self.mdRentLog[key]
             if rent["book_state"] not in {0, 1}:
@@ -86,5 +89,6 @@ class MongoDB:
                 userInfo["rent"] = [{'book': self.mdBooks[book], 'log': rent}]
                 userList[user] = userInfo
 
+        print(f"Found {len(userList)} users")
 
         return userList
