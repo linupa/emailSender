@@ -1,7 +1,8 @@
 name: email-sender
-on: push
-#on: schedule:
-#    - cron: '0 1 * * *'
+
+on:
+  schedule:
+    - cron: '0 1 * * *'
 
 jobs:
     run-email-sender:

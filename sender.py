@@ -9,6 +9,7 @@ import json
 from gmail3 import GMail
 from datetime import datetime, timedelta
 from mongodb import MongoDB
+from zoneinfo import ZoneInfo
 
 #os.chdir(sys.path[0])
 #sys.path = ['../gserver'] + sys.path
@@ -111,15 +112,13 @@ if __name__ == '__main__':
   previewIndex = 0
 
   def setReceiver(db, arg):
-    today = datetime.now().date()
+    tz = ZoneInfo("America/Los_Angeles")
+    today = datetime.now(tz=tz).date()
+    print(f"Today: {today}")
     if arg == 0:
-        return db.getRecentDueDate(today, 7)
-#        reqtype = chaekbangdb_pb2.COURTECY_NOTICE
+        return db.getRecentDueDate(today, 6)
     else:
-        return db.getRecentActivity(today, 7)
-#        reqtype = chaekbangdb_pb2.RENTAL_LOG
-#    userList = db.GetUserList(reqtype)
-#    return userList
+        return db.getRecentActivity(today, 6)
 
   def getBody(entry):
      writer = EmailWriter()
