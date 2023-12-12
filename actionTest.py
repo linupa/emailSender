@@ -20,4 +20,9 @@ if __name__ == '__main__':
     except KeyError:
         print("Cannot find mail token")
 
+    if "PAUSE" in os.environ:
+        print(f"Pause value: {os.environ['PAUSE']}")
+    else:
+        print(f"PAUSE does not exist")
+
 

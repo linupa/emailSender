@@ -23,6 +23,7 @@ jobs:
               env:
                 MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
                 MAIL_TOKEN: ${{ secrets.MAIL_TOKEN }}
+                PAUSE: ${{ env.PAUSE }}
 
               run: python actionTest.py
 

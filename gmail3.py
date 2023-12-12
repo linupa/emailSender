@@ -29,13 +29,13 @@ class GMail():
                 flow = InstalledAppFlow.from_client_secrets_file('client_secret.json', SCOPES)
                 self.creds = flow.run_local_server(port=0)
 
+#        print(self.creds.to_json())
         self.service = build('gmail', 'v1', credentials=self.creds)
 
     def SendMessage(self, user_id, message):
         """Send an email message.
 
         Args:
-          service: Authorized Gmail API service instance.
           user_id: User's email address. The special value "me"
           can be used to indicate the authenticated user.
           message: Message to be sent.
