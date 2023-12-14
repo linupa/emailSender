@@ -90,17 +90,19 @@ if __name__ == '__main__':
   msgType = msgTypes[msgType]
   userList= dict()
 
-  textFile =  open('text.json', 'r', encoding='utf-8')
+  textFile =  open('text/text.json', 'r', encoding='utf-8')
   text = json.load(textFile)['kr']
 
   if msgType == 0:
       subject = text["courtesyNotice"]
-      f2 = open('CourtesyNotice.txt', 'r', encoding='utf-8')
+      f2 = open('text/CourtesyNotice.txt', 'r', encoding='utf-8')
       body = f2.read()
+      print(body)
   else:
       subject = text["rentalHistory"]
-      f3 = open('CheckInOut.txt', 'r', encoding='utf-8')
+      f3 = open('text/CheckInOut.txt', 'r', encoding='utf-8')
       body = f3.read()
+      print(body)
 
 #  print(sys.path[1])
 #  directory = sys.path[1]
@@ -151,7 +153,7 @@ if __name__ == '__main__':
 #       context.update(db.GetLogString(entry['rent']))
        context.update({'checkout': rentList, 'checkin': returnList })
 
-     f = codecs.open('./cache.txt', 'w', 'utf-8')
+     f = codecs.open('text/cache.txt', 'w', 'utf-8')
      f.write(txt);
      f.close()
 
