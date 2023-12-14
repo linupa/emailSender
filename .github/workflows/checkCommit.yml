@@ -11,7 +11,7 @@ jobs:
               run: echo "Variable PAUSE=[$PAUSE]"
 
             - name: checker repo
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
 
             - name: setup python
               uses: actions/setup-python@v4
