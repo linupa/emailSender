@@ -5,6 +5,11 @@ jobs:
     check-sender-commit:
         runs-on: ubuntu-latest
         steps:
+            - name: Check variables
+              env:
+                PAUSE: ${{ vars.PAUSE }}
+              run: echo "Variable PAUSE=[$PAUSE]"
+
             - name: checker repo
               uses: actions/checkout@v2
 
@@ -23,7 +28,7 @@ jobs:
               env:
                 MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
                 MAIL_TOKEN: ${{ secrets.MAIL_TOKEN }}
-                PAUSE: ${{ env.PAUSE }}
+                PAUSE: ${{ vars.PAUSE }}
 
               run: python actionTest.py
 
