@@ -97,12 +97,10 @@ if __name__ == '__main__':
       subject = text["courtesyNotice"]
       f2 = open('text/CourtesyNotice.txt', 'r', encoding='utf-8')
       body = f2.read()
-      print(body)
   else:
       subject = text["rentalHistory"]
       f3 = open('text/CheckInOut.txt', 'r', encoding='utf-8')
       body = f3.read()
-      print(body)
 
 #  print(sys.path[1])
 #  directory = sys.path[1]

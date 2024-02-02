@@ -6,9 +6,10 @@ from zoneinfo import ZoneInfo
 if __name__ == "__main__":
     tz = ZoneInfo("America/Los_Angeles")
     currentTime = datetime.now(tz=tz)
-    print(currentTime)
     hour = currentTime.hour
     weekday = currentTime.weekday()
+    weekdays = ["Mon", "Tue", "Wed", "Thr", "Fri", "Sat", "Sun"]
+    print(f"{currentTime} {weekdays[weekday]}")
 
     pause = True
     if "PAUSE" in os.environ:
@@ -18,15 +19,15 @@ if __name__ == "__main__":
         print("Sending paused")
 
     if weekday == 1:
-        print("Send notice test")
+        print("Send notice test (Tuesday)")
         cmd = "python3 sender.py notice"
         print(os.popen(cmd).read())
     elif weekday == 2:
-        print("Send checkout test")
+        print("Send checkout test (Wednesday)")
         cmd = "python3 sender.py checkout"
         print(os.popen(cmd).read())
     elif weekday == 4:
-        print("Send notice test")
+        print("Send notice test (Friday)")
         cmd = "python3 sender.py notice"
         print(os.popen(cmd).read())
     elif weekday == 5:
