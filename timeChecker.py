@@ -43,5 +43,5 @@ if __name__ == "__main__":
             cmd += " send"
         print(os.popen(cmd).read())
     else:
-        print(f"Do nothing ({weekday})")
+        print(f"Do nothing {weekdays[weekday]}({weekday})")
 
