@@ -17,7 +17,7 @@ class SQSClient:
             ACCESS_KEY = Config["access_key"]
 
         if "SECRET_ACCESS_KEY" in os.environ:
-            SECRET_ACCESS_KEY = os.environ["SECRET_ACCESS_KEY "]
+            SECRET_ACCESS_KEY = os.environ["SECRET_ACCESS_KEY"]
         else:
             SECRET_ACCESS_KEY = Config["secret_access_key"]
         self.sqs = session.client(
