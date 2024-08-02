@@ -27,6 +27,8 @@ jobs:
                 MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
                 MAIL_TOKEN: ${{ secrets.MAIL_TOKEN }}
                 PAUSE: ${{ vars.PAUSE }}
+                ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
+                SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
 
               run: python timeChecker.py
 

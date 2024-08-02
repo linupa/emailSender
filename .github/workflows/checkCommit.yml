@@ -29,13 +29,25 @@ jobs:
                 MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
                 MAIL_TOKEN: ${{ secrets.MAIL_TOKEN }}
                 PAUSE: ${{ vars.PAUSE }}
+                ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
+                SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
 
               run: python actionTest.py
+
+            - name: test request handler
+              env:
+                MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
+                ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
+                SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
+
+              run: python handleRequest.py
 
             - name: test notice sender
               env:
                 MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
                 MAIL_TOKEN: ${{ secrets.MAIL_TOKEN }}
+                ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
+                SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
 
               run: python sender.py notice
 
@@ -43,5 +55,7 @@ jobs:
               env:
                 MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
                 MAIL_TOKEN: ${{ secrets.MAIL_TOKEN }}
+                ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
+                SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
 
               run: python sender.py checkout
