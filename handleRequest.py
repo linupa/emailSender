@@ -14,7 +14,26 @@ if __name__ == "__main__":
     connection = 'mongodb+srv://linupa:{}@hkmcclibrary.s59ur1w.mongodb.net/?retryWrites=true&w=majority'.format(password)
     db = MongoDB(connection)
 
-    client = SQSClient()
+    print("Receive requests")
+    REGION = "us-west-1"
+    URL = "https://sqs.us-west-1.amazonaws.com/088564131385/HKMCCLibraryRequest.fifo"
+    if "ACCESS_KEY" in os.environ:
+        ACCESS_KEY = os.environ["ACCESS_KEY"]
+    else:
+        from config import Config
+        ACCESS_KEY = Config["access_key"]
+
+    if "SECRET_ACCESS_KEY" in os.environ:
+        SECRET_ACCESS_KEY = os.environ["SECRET_ACCESS_KEY"]
+    else:
+        SECRET_ACCESS_KEY = Config["secret_access_key"]
+    sqsConfig = {
+        "REGION": REGION,
+        "URL": URL,
+        "ACCESS_KEY": ACCESS_KEY,
+        "SECRET_ACCESS_KEY": SECRET_ACCESS_KEY
+    }
+    client = SQSClient(sqsConfig)
     msgs = client.PopQueue()
 
     print(db.mdRequest)
