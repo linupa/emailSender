@@ -35,6 +35,13 @@ class MongoDB:
             self.mdRent[key] = rent
         print(f"rent len {len(self.mdRent)}")
 
+        self.requestDb = db.request
+        self.mdRequest = dict()
+        for request in self.requestDb.find():
+            key = request['_id']
+            self.mdRequest[key] = request
+        print(f"request len {len(self.mdRequest)}")
+
     def getRecentDueDate(self, today, interval):
         userList = dict()
         refDate = str(today + timedelta(days= interval))

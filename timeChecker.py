@@ -11,6 +11,10 @@ if __name__ == "__main__":
     weekdays = ["Mon", "Tue", "Wed", "Thr", "Fri", "Sat", "Sun"]
     print(f"{currentTime} {weekdays[weekday]}")
 
+    print("Check Requests")
+    cmd = "python3 handleRequest.py"
+    print(os.popen(cmd).read())
+
     pause = True
     if "PAUSE" in os.environ:
         pause = (os.environ["PAUSE"] != "FALSE")

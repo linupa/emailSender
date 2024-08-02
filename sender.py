@@ -81,7 +81,11 @@ if __name__ == '__main__':
           verbose = True
 
   print("Open MongoDB")
-  password = os.environ["MONGODB_PASSWORD"]
+  if "MONGODB_PASSWORD" in os.environ:
+    password = os.environ["MONGODB_PASSWORD"]
+  else:
+    from config import Config
+    password = Config["password"]
   connection = 'mongodb+srv://linupa:{}@hkmcclibrary.s59ur1w.mongodb.net/?retryWrites=true&w=majority'.format(password)
   db = MongoDB(connection)
 
