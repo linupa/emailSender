@@ -28,9 +28,9 @@ class MongoDB:
             self.mdRentLog[key] = log
         print(f"rentLog len {len(self.mdRentLog)}")
 
-        rentDb = db.rent
+        self.rentDb = db.rent
         self.mdRent = dict()
-        for rent in rentDb.find():
+        for rent in self.rentDb.find():
             key = rent['_id']
             self.mdRent[key] = rent
         print(f"rent len {len(self.mdRent)}")

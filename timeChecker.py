@@ -15,6 +15,10 @@ if __name__ == "__main__":
     cmd = "python3 handleRequest.py"
     print(os.popen(cmd).read())
 
+    print("Handle extend Requests")
+    cmd = "python3 handleExtend.py"
+    print(os.popen(cmd).read())
+
     pause = True
     if "PAUSE" in os.environ:
         pause = (os.environ["PAUSE"] != "FALSE")
