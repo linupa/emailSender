@@ -133,12 +133,13 @@ if __name__ == '__main__':
     BATCH_SIZE = 100
     oldRequests = list()
     lastRow = 2
-    oldIds = set()
+    oldIds = dict()
     lastEntry = 1
     titleIdx = labelIdx["title"]
     idIdx = labelIdx["id"]
+    stateIdx = labelIdx["state"]
     while True:
-        values = sheet.get(sheetId, f"BookRequest!A{lastRow}:H{lastRow+BATCH_SIZE}")
+        values = sheet.get(sheetId, f"BookRequest!A{lastRow}:Z{lastRow+BATCH_SIZE}")
         added = False
         for idx in range(len(values)):
             value = values[idx]
@@ -147,7 +148,7 @@ if __name__ == '__main__':
             lastEntry = lastRow + idx
             oldRequests.append(value)
             if len(value[idIdx]) > 0:
-                oldIds.add(value[idIdx])
+                oldIds[value[idIdx]] = value[stateIdx] if len(value) > stateIdx else ""
             added = True
         lastRow += len(values)
         if len(values) < BATCH_SIZE:
@@ -160,11 +161,11 @@ if __name__ == '__main__':
     idx = lastEntry + 1
     added = 0
     for bookRequest in bookRequests:
-#        coord = "BookRequest!A2:E3"
-#        data = [[bookRequest["
-#        self.sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=coord,
-#            valueInputOption="USER_ENTERED", body={"values": data}).execute()
-        if bookRequest['_id'] in oldIds:
+        reqId = bookRequest['_id']
+        if reqId in oldIds:
+            if oldIds[reqId] == "done":
+                bookRequest["state"] = "done"
+                changedRequest.append(reqId)
             continue
         userId = bookRequest["user_id"]
         if userId in request.users:
@@ -172,7 +173,7 @@ if __name__ == '__main__':
         else:
             name = ""
         data = [None] * len(labels)
-        data[labelIdx["id"]] = bookRequest["_id"]
+        data[labelIdx["id"]] = reqId
         data[labelIdx["date"]] = bookRequest["date"]
         data[labelIdx["requester"]] = userId
         data[labelIdx["name"]] = name
