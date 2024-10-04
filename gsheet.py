@@ -17,7 +17,7 @@ class GSheet:
         # time.
         token = None
         if "SHEET_TOKEN" in os.environ:
-            token = os.environ["SHEET_TOKEN"]
+            token = json.loads(os.environ["SHEET_TOKEN"])
         elif os.path.exists("token.json"):
             with open("token.json", "r") as f:
                 token =  json.load(f)
