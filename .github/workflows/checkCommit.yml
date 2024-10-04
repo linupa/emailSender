@@ -34,11 +34,20 @@ jobs:
 
               run: python actionTest.py
 
+            - name: test sqs handler
+              env:
+                MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
+                ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
+                SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
+
+              run: python handleSQS.py
+
             - name: test request handler
               env:
                 MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
                 ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
                 SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
+                SHEET_TOKEN: ${{ secrets.SHEET_TOKEN }}
 
               run: python handleRequest.py
 

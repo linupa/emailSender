@@ -11,12 +11,12 @@ if __name__ == "__main__":
     weekdays = ["Mon", "Tue", "Wed", "Thr", "Fri", "Sat", "Sun"]
     print(f"{currentTime} {weekdays[weekday]}")
 
-    print("Check Requests")
-    cmd = "python3 handleRequest.py"
+    print("Check SQS")
+    cmd = "python3 handleSQS.py"
     print(os.popen(cmd).read())
 
-    print("Handle extend Requests")
-    cmd = "python3 handleExtend.py"
+    print("Handle Requests")
+    cmd = "python3 handleRequest.py"
     print(os.popen(cmd).read())
 
     pause = True
