@@ -44,6 +44,7 @@ jobs:
 
             - name: test request handler
               env:
+                SHEET_ID: ${{ vars.SHEET_ID }}
                 MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
                 ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
                 SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}

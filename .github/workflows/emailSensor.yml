@@ -29,6 +29,8 @@ jobs:
                 PAUSE: ${{ vars.PAUSE }}
                 ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
                 SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
+                SHEET_ID: ${{ vars.SHEET_ID }}
+                SHEET_TOKEN: ${{ secrets.SHEET_TOKEN }}
 
               run: python timeChecker.py
 
