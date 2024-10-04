@@ -127,7 +127,8 @@ if __name__ == '__main__':
     labelIdx = dict()
     for i in range(len(labels)):
         label = labels[i].lower()
-        labelIdx[label] = i
+        if len(label) > 0:
+            labelIdx[label] = i
     print(f"Label {labelIdx}")
 
     BATCH_SIZE = 100
@@ -173,14 +174,21 @@ if __name__ == '__main__':
         else:
             name = ""
         data = [None] * len(labels)
-        data[labelIdx["id"]] = reqId
-        data[labelIdx["date"]] = bookRequest["date"]
-        data[labelIdx["requester"]] = userId
-        data[labelIdx["name"]] = name
-        data[labelIdx["title"]] = bookRequest["title"]
-        data[labelIdx["author"]] = bookRequest["author"]
-        data[labelIdx["publisher"]] = bookRequest["publisher"]
-        data[labelIdx["note"]] = bookRequest["note"]
+        entry = dict()
+        entry["id"] = reqId
+        entry["date"] = bookRequest["date"]
+        entry["requester"] = userId
+        entry["name"] = name
+        entry["title"] = bookRequest["title"]
+        entry["author"] = bookRequest["author"]
+        entry["publisher"] = bookRequest["publisher"]
+        entry["note"] = bookRequest["note"]
+        for label in labelIdx:
+            if label not in entry:
+                continue
+            i = labelIdx[label]
+            data[i] = entry[label]
+
         sheet.update(sheetId, f"BookRequest!A{idx}:Z{idx}", [data])
         added += 1
         idx += 1
