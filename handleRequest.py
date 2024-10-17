@@ -90,7 +90,6 @@ class Request:
                 continue
             if request["state"] != "pending":
                 continue
-            print(request)
             ret.append(request)
         return ret
 

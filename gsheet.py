@@ -16,7 +16,8 @@ class GSheet:
         # created automatically when the authorization flow completes for the first
         # time.
         token = None
-        if "SHEET_TOKEN" in os.environ:
+        if "SHEET_TOKEN" in os.environ and len(os.environ["SHEET_TOKEN"]) > 0:
+            print(f"[{len(os.environ['SHEET_TOKEN'])}]")
             token = json.loads(os.environ["SHEET_TOKEN"])
         elif os.path.exists("token.json"):
             with open("token.json", "r") as f:
