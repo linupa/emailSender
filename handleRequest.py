@@ -4,6 +4,7 @@ from dbUtil import *
 import subprocess
 import datetime
 from gsheet import GSheet
+import json
 
 class Request:
     def __init__(self, db):
@@ -100,9 +101,15 @@ if __name__ == '__main__':
     else:
         from config import Config
         password = Config['password']
-    sheetId = os.environ["SHEET_ID"]
+#    SHEET_ID="1ahHXLb87hsnqzyo6IP7WLTVgt_Ra91RxUhZZVOcYU_M"
+    SHEET_ID="1aWzA4jlcCZGAeMa2L997ptiokA_Kt0TeRsZnt6khMbM"
+    #sheetId = os.environ["SHEET_ID"]
+    sheetId = SHEET_ID
     connection = 'mongodb+srv://linupa:{}@hkmcclibrary.s59ur1w.mongodb.net/?retryWrites=true&w=majority'.format(password)
     db = MongoDB(connection)
+
+    with open("text.json", "r") as f:
+        text = json.load(f)
 
     request = Request(db)
 
@@ -122,32 +129,39 @@ if __name__ == '__main__':
 
     bookRequests = request.bookRequest()
 
-    labels = sheet.get(sheetId, f"BookRequest!A1:Z1")[0]
+#    labels = sheet.get(sheetId, f"BookRequest!A1:Z1")[0]
+    lines = sheet.get(sheetId, f"A2:Z3")
     labelIdx = dict()
-    for i in range(len(labels)):
-        label = labels[i].lower()
-        if len(label) > 0:
-            labelIdx[label] = i
+    maxColumn = 0
+    for labels in lines:
+        for i in range(len(labels)):
+            label = labels[i].lower().strip()
+            if len(label) > 0:
+                labelIdx[label] = i
+            if i > maxColumn:
+                maxColumn = i;
     print(f"Label {labelIdx}")
 
     BATCH_SIZE = 100
     oldRequests = list()
-    lastRow = 2
+    lastRow = 4
     oldIds = dict()
     lastEntry = 1
-    titleIdx = labelIdx["title"]
-    idIdx = labelIdx["id"]
-    stateIdx = labelIdx["state"]
+    titleIdx = labelIdx[text["title"]]
+    idIdx = labelIdx[text["id"]]
+    stateIdx = labelIdx[text["state"]]
     while True:
-        values = sheet.get(sheetId, f"BookRequest!A{lastRow}:Z{lastRow+BATCH_SIZE}")
+#        values = sheet.get(sheetId, f"BookRequest!A{lastRow}:Z{lastRow+BATCH_SIZE}")
+        values = sheet.get(sheetId, f"A{lastRow}:Z{lastRow+BATCH_SIZE}")
         added = False
         for idx in range(len(values)):
             value = values[idx]
             if len(value) < titleIdx or value[titleIdx] == "":
+                print(f"Empty row: {lastRow + idx}")
                 continue
             lastEntry = lastRow + idx
             oldRequests.append(value)
-            if len(value[idIdx]) > 0:
+            if len(value) > idIdx and len(value[idIdx]) > 0:
                 oldIds[value[idIdx]] = value[stateIdx] if len(value) > stateIdx else ""
             added = True
         lastRow += len(values)
@@ -162,6 +176,7 @@ if __name__ == '__main__':
     added = 0
     for bookRequest in bookRequests:
         reqId = bookRequest['_id']
+        date = datetime.datetime.strptime(bookRequest["date"], "%Y-%m-%d")
         if reqId in oldIds:
             if oldIds[reqId] == "done":
                 bookRequest["state"] = "done"
@@ -172,23 +187,26 @@ if __name__ == '__main__':
             name = request.users[userId]["name"]
         else:
             name = ""
-        data = [None] * len(labels)
+        print(date)
+        print(date.strftime("%m/%d/%Y"))
+        data = [None] * (maxColumn + 1)
         entry = dict()
-        entry["id"] = reqId
-        entry["date"] = bookRequest["date"]
-        entry["requester"] = userId
-        entry["name"] = name
-        entry["title"] = bookRequest["title"]
-        entry["author"] = bookRequest["author"]
-        entry["publisher"] = bookRequest["publisher"]
-        entry["note"] = bookRequest["note"]
+        entry[text["id"]] = reqId
+        entry[text["date"]] = date.strftime("%m/%d/%Y")
+        entry[text["requester"]] = userId
+        entry[text["name"]] = name
+        entry[text["title"]] = bookRequest["title"]
+        entry[text["author"]] = bookRequest["author"]
+        entry[text["publisher"]] = bookRequest["publisher"]
+        entry[text["note"]] = bookRequest["note"]
         for label in labelIdx:
-            if label not in entry:
+            if label not in entry or label not in labelIdx:
                 continue
             i = labelIdx[label]
             data[i] = entry[label]
 
-        sheet.update(sheetId, f"BookRequest!A{idx}:Z{idx}", [data])
+#        sheet.update(sheetId, f"BookRequest!A{idx}:Z{idx}", [data])
+        sheet.update(sheetId, f"A{idx}:Z{idx}", [data])
         added += 1
         idx += 1
     print(f"{added} requests added")

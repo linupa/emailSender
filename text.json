@@ -1,0 +1,11 @@
+{
+    "id": "등록번호",
+    "date": "신청일",
+    "requester": "회원번호",
+    "name": "이름",
+    "title": "도서명",
+    "author": "저자",
+    "publisher": "출판사",
+    "note": "기타",
+    "state": "구매여부"
+}
