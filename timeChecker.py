@@ -2,8 +2,17 @@ import time
 import os
 from datetime import datetime
 from zoneinfo import ZoneInfo
+import argparse
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--daily', action='store_true')
+    parser.add_argument('-H', '--hourly', action='store_true')
+
+    args = parser.parse_args()
+
+    print(args)
+
     tz = ZoneInfo("America/Los_Angeles")
     currentTime = datetime.now(tz=tz)
     hour = currentTime.hour
@@ -22,6 +31,9 @@ if __name__ == "__main__":
     pause = True
     if "PAUSE" in os.environ:
         pause = (os.environ["PAUSE"] != "FALSE")
+
+    if args.hourly or not args.daily:
+        pause = True
 
     if pause:
         print("Sending paused")

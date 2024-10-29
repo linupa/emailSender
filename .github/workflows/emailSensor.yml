@@ -3,6 +3,7 @@ name: email-sender
 on:
   schedule:
     - cron: '0 1 * * *'
+    - cron: '0 0/3 * * *'
 
 jobs:
     run-email-sender:
@@ -22,7 +23,8 @@ jobs:
             - name: install python packages
               run: pip install -r requirements.txt
 
-            - name: execute timeChecker script
+            - name: execute timeChecker script daily
+              if: github.event.schedule != '0 1 * * * *'
               env:
                 MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
                 MAIL_TOKEN: ${{ secrets.MAIL_TOKEN }}
@@ -32,5 +34,17 @@ jobs:
                 SHEET_ID: ${{ vars.SHEET_ID }}
                 SHEET_TOKEN: ${{ secrets.SHEET_TOKEN }}
 
-              run: python timeChecker.py
+              run: python timeChecker.py --daily
+
+            - name: execute timeChecker script hourly
+              env:
+                MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
+                MAIL_TOKEN: ${{ secrets.MAIL_TOKEN }}
+                PAUSE: ${{ vars.PAUSE }}
+                ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
+                SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
+                SHEET_ID: ${{ vars.SHEET_ID }}
+                SHEET_TOKEN: ${{ secrets.SHEET_TOKEN }}
+
+              run: python timeChecker.py --hourly
 
