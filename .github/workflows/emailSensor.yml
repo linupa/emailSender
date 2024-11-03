@@ -24,7 +24,7 @@ jobs:
               run: pip install -r requirements.txt
 
             - name: execute timeChecker script daily
-              if: github.event.schedule != '0 1 * * * *'
+              if: github.event.schedule == '0 1 * * *'
               env:
                 MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
                 MAIL_TOKEN: ${{ secrets.MAIL_TOKEN }}
