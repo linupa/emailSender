@@ -76,6 +76,8 @@ class Request:
             print(f"New due date {newRetDate}")
             request["state"] = "done"
             rent["return_date"] = newRetDate
+            if rent["state"] == 3:
+                rent["state"] = 1
             rent["extend_count"] += 1
             retBookSeq.append(seq)
         return [retRequest, retBookSeq]
