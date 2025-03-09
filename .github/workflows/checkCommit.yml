@@ -59,7 +59,7 @@ jobs:
                 ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
                 SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
 
-              run: python sender.py notice
+              run: python sender.py -t notice
 
             - name: test checkout sender
               env:
@@ -68,4 +68,4 @@ jobs:
                 ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
                 SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
 
-              run: python sender.py checkout
+              run: python sender.py -t checkout

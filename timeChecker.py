@@ -40,27 +40,27 @@ if __name__ == "__main__":
 
     if weekday == 1:
         print("Send notice test (Tuesday)")
-        cmd = "python3 sender.py notice"
+        cmd = "python3 sender.py --type notice"
         print(os.popen(cmd).read())
     elif weekday == 2:
         print("Send checkout test (Wednesday)")
-        cmd = "python3 sender.py checkout"
+        cmd = "python3 sender.py --type checkout"
         print(os.popen(cmd).read())
     elif weekday == 4:
         print("Send notice test (Friday)")
-        cmd = "python3 sender.py notice"
+        cmd = "python3 sender.py --type notice"
         print(os.popen(cmd).read())
     elif weekday == 5:
         print("Send notice (Satureday)")
-        cmd = "python3 sender.py notice" # send"
+        cmd = "python3 sender.py --type notice" # send"
         if not pause:
-            cmd += " send"
+            cmd += " --send"
         print(os.popen(cmd).read())
     elif weekday == 6:
         print("Send checkout (Sunday)")
-        cmd = "python3 sender.py checkout" # send"
+        cmd = "python3 sender.py --type checkout" # send"
         if not pause:
-            cmd += " send"
+            cmd += " --send"
         print(os.popen(cmd).read())
     else:
         print(f"Do nothing {weekdays[weekday]}({weekday})")

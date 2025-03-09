@@ -10,6 +10,7 @@ from gmail3 import GMail
 from datetime import datetime, timedelta
 from mongodb import MongoDB
 from zoneinfo import ZoneInfo
+import argparse
 
 #os.chdir(sys.path[0])
 #sys.path = ['../gserver'] + sys.path
@@ -23,62 +24,78 @@ global msgType
 
 def sendEmail(userList, test):
   count = 0
-  tokenStr = os.environ["MAIL_TOKEN"]
-  token = json.loads(tokenStr)
+  print(f"Test {test}")
+  tokenStr = None
+  if "MAIL_TOKEN" in os.environ:
+    tokenStr = os.environ["MAIL_TOKEN"]
+  else:
+    print("MAIL TOKEN does not exist")
+    KEY="credentials.json"
+    if os.path.isfile(KEY):
+        with open(KEY, "r") as f:
+            tokenStr = f.read()
+  if tokenStr:
+      token = json.loads(tokenStr)
+  else:
+      token = None
   gmail = GMail(token)
   logFile = open("emailLog.txt", "a", encoding="utf-8")
   logFile.write(str(datetime.now()) + str(test) + "\n")
   logFile.write("="*30 + "\n")
   for key in userList:
     user = userList[key]
-    toaddr = user['email']
+    toaddr = user['email'].strip()
     print(f"Send {key} {toaddr}")
 
     if len(toaddr) == 0:
         continue
-#    toaddr = "linupa1@gmail.com"
-    fromaddr = GOOGLE_ACCOUNT
-    sub = subject
-    content = getBody(user)
+    try:
+    #    toaddr = "linupa1@gmail.com"
+        fromaddr = GOOGLE_ACCOUNT
+        sub = subject
+        content = getBody(user)
 
-    if verbose:
-        print(sub)
-        print(content)
-    msg = gmail.CreateMessage(fromaddr, toaddr, sub, content)
-    if not test:
-        gmail.SendMessage(GOOGLE_ACCOUNT, msg)
-    else:
-        print("Skip sending")
-    logFile.write(content + "\n")
-    time.sleep(0.01)
-    count += 1
-#    if count > 5:
-#        break;
+        if verbose:
+            print(sub)
+            print(content)
+        msg = gmail.CreateMessage(fromaddr, toaddr, sub, content)
+        if not test:
+            gmail.SendMessage(GOOGLE_ACCOUNT, msg)
+        else:
+            print("Skip sending")
+        logFile.write(content + "\n")
+        time.sleep(0.01)
+        count += 1
+    #    if count > 5:
+    #        break;
+    except Exception as e:
+        print(f"Exception while mail send ({e})")
   logFile.close()
 
 if __name__ == '__main__':
 
-  if len(sys.argv) < 2:
+  parser = argparse.ArgumentParser(prog='emailSensor')
+  parser.add_argument('-t', '--type')
+  parser.add_argument('-d', '--debug', action='store_true')
+  parser.add_argument('-v', '--verbose', action='store_true')
+  parser.add_argument('-s', '--send', action='store_true')
+  parser.add_argument('-m', '--msg')
+
+  args = parser.parse_args()
+
+  if args.type == None:
+    parser.print_help()
     exit(-1)
 
-  msgTypes = {"notice": 0, "checkout": 1}
-  msgType = sys.argv[1]
+  msgTypes = {"notice": 0, "checkout": 1, "all": 2}
+  msgType = args.type
   if msgType not in msgTypes:
+    print("Invalid msg type")
+    parser.print_help()
     exit(-1)
 
-  test = True
-  verbose = False
-  if len(sys.argv) > 2:
-      if sys.argv[2] == "send":
-          test = False
-      elif sys.argv[2] == "verbose":
-          verbose = True
-
-  if len(sys.argv) > 3:
-      if sys.argv[3] == "send":
-          test = False
-      elif sys.argv[3] == "verbose":
-          verbose = True
+  test = not args.send
+  verbose = args.verbose
 
   print("Open MongoDB")
   if "MONGODB_PASSWORD" in os.environ:
@@ -89,10 +106,13 @@ if __name__ == '__main__':
   connection = 'mongodb+srv://linupa:{}@hkmcclibrary.s59ur1w.mongodb.net/?retryWrites=true&w=majority'.format(password)
   db = MongoDB(connection)
 
-
   print(f"Msg type: {msgType} Test:{test}")
   msgType = msgTypes[msgType]
   userList= dict()
+
+  if msgType == 2 and args.msg == None:
+    print("msg type is all, but no msg")
+    exit(-1)
 
   textFile =  open('text/text.json', 'r', encoding='utf-8')
   text = json.load(textFile)['kr']
@@ -101,10 +121,16 @@ if __name__ == '__main__':
       subject = text["courtesyNotice"]
       f2 = open('text/CourtesyNotice.txt', 'r', encoding='utf-8')
       body = f2.read()
-  else:
+  elif msgType == 1:
       subject = text["rentalHistory"]
       f3 = open('text/CheckInOut.txt', 'r', encoding='utf-8')
       body = f3.read()
+  elif msgType == 2:
+    with open(args.msg, 'r', encoding='utf-8') as f:
+        text = json.load(f)
+        subject = text['title']
+        body = text['contents']
+  print(body)
 
 #  print(sys.path[1])
 #  directory = sys.path[1]
@@ -121,8 +147,10 @@ if __name__ == '__main__':
     print(f"Today: {today}")
     if arg == 0:
         return db.getRecentDueDate(today, 6)
-    else:
+    elif arg == 1:
         return db.getRecentActivity(today, 6)
+    elif arg == 2:
+        return db.getAllUsers()
 
   def getBody(entry):
      writer = EmailWriter()
@@ -162,6 +190,8 @@ if __name__ == '__main__':
      return writer.Render('cache.txt', context)
 
   userList = setReceiver(db, msgType)
+
+#  userList = {'AB0354': {'id': 'AB0354', 'email' : 'linupa@gmail.com', 'name': 'Name'}}
 
   sendEmail(userList, test)
 

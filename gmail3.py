@@ -18,7 +18,10 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.send']
 class GMail():
     def __init__(self, token):
         print("Connecting Gmail")
-        self.creds = Credentials.from_authorized_user_info(token, SCOPES)
+        if token:
+            self.creds = Credentials.from_authorized_user_info(token, SCOPES)
+        else:
+            self.creds = None
         if not self.creds or not self.creds.valid:
             print("Token not exist/valid")
             if self.creds and self.creds.expired and self.creds.refresh_token:
@@ -28,6 +31,10 @@ class GMail():
                 print("download token")
                 flow = InstalledAppFlow.from_client_secrets_file('client_secret.json', SCOPES)
                 self.creds = flow.run_local_server(port=0)
+                creds = self.creds.to_json()
+                print(creds)
+                with open("credentials.json", "w") as f:
+                    f.write(creds)
 
 #        print(self.creds.to_json())
         self.service = build('gmail', 'v1', credentials=self.creds)

@@ -99,3 +99,19 @@ class MongoDB:
         print(f"Found {len(userList)} users")
 
         return userList
+
+    def getAllUsers(self):
+        userList = dict()
+        print(f"Get all users")
+        for key in self.mdUsers:
+            mdUser = self.mdUsers[key]
+
+            userInfo = dict()
+            userInfo["id"] = mdUser["_id"]
+            userInfo["email"] = mdUser["email"]
+            userInfo["name"] = mdUser["name"]
+            userList[key] = userInfo
+
+        print(f"Found {len(userList)} users")
+
+        return userList
