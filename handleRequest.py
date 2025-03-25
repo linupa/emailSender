@@ -131,8 +131,10 @@ if __name__ == '__main__':
 
     bookRequests = request.bookRequest()
 
+    sheetName = text["sheetName"]
+
 #    labels = sheet.get(sheetId, f"BookRequest!A1:Z1")[0]
-    lines = sheet.get(sheetId, f"A2:Z3")
+    lines = sheet.get(sheetId, f"{sheetName}!A2:Z3")
     labelIdx = dict()
     maxColumn = 0
     for labels in lines:
@@ -154,7 +156,7 @@ if __name__ == '__main__':
     stateIdx = labelIdx[text["state"]]
     while True:
 #        values = sheet.get(sheetId, f"BookRequest!A{lastRow}:Z{lastRow+BATCH_SIZE}")
-        values = sheet.get(sheetId, f"A{lastRow}:Z{lastRow+BATCH_SIZE}")
+        values = sheet.get(sheetId, f"{sheetName}!A{lastRow}:Z{lastRow+BATCH_SIZE}")
         added = False
         for idx in range(len(values)):
             value = values[idx]

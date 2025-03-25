@@ -7,5 +7,6 @@
     "author": "저자",
     "publisher": "출판사",
     "note": "기타",
-    "state": "구매여부"
+    "state": "구매여부",
+    "sheetName": "도서신청기록"
 }
