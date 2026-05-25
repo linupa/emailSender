@@ -87,7 +87,7 @@ class MongoDB:
             book = rent["book_id"]
             if user in userList:
                 userList[user]["rent"].append({'book': self.mdBooks[book], 'log': rent})
-            else:
+            elif user in self.mdUsers:
                 userInfo = dict()
                 mdUser = self.mdUsers[user]
                 userInfo["id"] = mdUser["_id"]
@@ -95,6 +95,9 @@ class MongoDB:
                 userInfo["name"] = mdUser["name"]
                 userInfo["rent"] = [{'book': self.mdBooks[book], 'log': rent}]
                 userList[user] = userInfo
+            else:
+                print(f"User {user} is not available!!!")
+                print(rent)
 
         print(f"Found {len(userList)} users")
 

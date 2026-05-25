@@ -118,8 +118,6 @@ if __name__ == '__main__':
     changedRequest, changedRent = request.extend()
 
 
-    sheet = GSheet()
-
     print(changedRequest)
     for key in changedRequest:
         bookRequest = request.requests[key]
@@ -133,6 +131,8 @@ if __name__ == '__main__':
 
     sheetName = text["sheetName"]
 
+    print(f"Open GSheet")
+    sheet = GSheet()
 #    labels = sheet.get(sheetId, f"BookRequest!A1:Z1")[0]
     lines = sheet.get(sheetId, f"{sheetName}!A2:Z3")
     labelIdx = dict()
