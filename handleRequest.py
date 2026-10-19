@@ -6,6 +6,8 @@ import datetime
 from gsheet import GSheet
 import json
 
+USE_GSHEET = False
+
 class Request:
     def __init__(self, db):
         self.db = db
@@ -67,18 +69,28 @@ class Request:
             print(rent)
             if rent["book_id"] != bookId or rent["user_id"] != request["user_id"]:
                 print(f"Rent info does not match {rent}")
+                request["state"] = "rejected"
+                continue
+            if 'extend_count' in rent and rent['extend_count'] >= 1:
+                print(f"Extend limit exceeded {rent}")
+                request["state"] = "rejected"
+                continue
             print(f"Extend due date {rent['return_date']} for {bookId}")
             dueDate = datetime.datetime.strptime(rent["return_date"], "%Y-%m-%d")
-            print(dueDate)
             now = datetime.datetime.now()
+            if now > dueDate:
+                print(f"expired {bookId}")
+                request["state"] = "rejected"
+                continue
             refDate = now if now > dueDate else dueDate
             newRetDate = timeToString(refDate + datetime.timedelta(days=21), True)
             print(f"New due date {newRetDate}")
-            request["state"] = "done"
             rent["return_date"] = newRetDate
             if rent["state"] == 3:
                 rent["state"] = 1
-            rent["extend_count"] += 1
+            rent['extend_count'] = rent['extend_count'] + 1 if 'extend_count' in rent else 1
+            print(rent)
+            request["state"] = "done"
             retBookSeq.append(seq)
         return [retRequest, retBookSeq]
 
@@ -127,93 +139,95 @@ if __name__ == '__main__':
     for key in changedRent:
         print(request.rents[key])
 
-    bookRequests = request.bookRequest()
+    # Google Sheet token is outdated; sheet sync is disabled until it is renewed
+    if USE_GSHEET:
+        bookRequests = request.bookRequest()
 
-    sheetName = text["sheetName"]
+        sheetName = text["sheetName"]
 
-    print(f"Open GSheet")
-    sheet = GSheet()
-#    labels = sheet.get(sheetId, f"BookRequest!A1:Z1")[0]
-    lines = sheet.get(sheetId, f"{sheetName}!A2:Z3")
-    labelIdx = dict()
-    maxColumn = 0
-    for labels in lines:
-        for i in range(len(labels)):
-            label = labels[i].lower().strip()
-            if len(label) > 0:
-                labelIdx[label] = i
-            if i > maxColumn:
-                maxColumn = i;
-    print(f"Label {labelIdx}")
+        print(f"Open GSheet")
+        sheet = GSheet()
+    #    labels = sheet.get(sheetId, f"BookRequest!A1:Z1")[0]
+        lines = sheet.get(sheetId, f"{sheetName}!A2:Z3")
+        labelIdx = dict()
+        maxColumn = 0
+        for labels in lines:
+            for i in range(len(labels)):
+                label = labels[i].lower().strip()
+                if len(label) > 0:
+                    labelIdx[label] = i
+                if i > maxColumn:
+                    maxColumn = i;
+        print(f"Label {labelIdx}")
 
-    BATCH_SIZE = 100
-    oldRequests = list()
-    lastRow = 4
-    oldIds = dict()
-    lastEntry = 1
-    titleIdx = labelIdx[text["title"]]
-    idIdx = labelIdx[text["id"]]
-    stateIdx = labelIdx[text["state"]]
-    while True:
-#        values = sheet.get(sheetId, f"BookRequest!A{lastRow}:Z{lastRow+BATCH_SIZE}")
-        values = sheet.get(sheetId, f"{sheetName}!A{lastRow}:Z{lastRow+BATCH_SIZE}")
-        added = False
-        for idx in range(len(values)):
-            value = values[idx]
-            if len(value) < titleIdx or value[titleIdx] == "":
-                print(f"Empty row: {lastRow + idx}")
+        BATCH_SIZE = 100
+        oldRequests = list()
+        lastRow = 4
+        oldIds = dict()
+        lastEntry = 1
+        titleIdx = labelIdx[text["title"]]
+        idIdx = labelIdx[text["id"]]
+        stateIdx = labelIdx[text["state"]]
+        while True:
+    #        values = sheet.get(sheetId, f"BookRequest!A{lastRow}:Z{lastRow+BATCH_SIZE}")
+            values = sheet.get(sheetId, f"{sheetName}!A{lastRow}:Z{lastRow+BATCH_SIZE}")
+            added = False
+            for idx in range(len(values)):
+                value = values[idx]
+                if len(value) < titleIdx or value[titleIdx] == "":
+                    print(f"Empty row: {lastRow + idx}")
+                    continue
+                lastEntry = lastRow + idx
+                oldRequests.append(value)
+                if len(value) > idIdx and len(value[idIdx]) > 0:
+                    oldIds[value[idIdx]] = value[stateIdx] if len(value) > stateIdx else ""
+                added = True
+            lastRow += len(values)
+            if len(values) < BATCH_SIZE:
+                break
+            if added == 0:
+                break
+
+        print(f"Read {len(oldRequests)} requests")
+
+        idx = lastEntry + 1
+        added = 0
+        for bookRequest in bookRequests:
+            reqId = bookRequest['_id']
+            date = datetime.datetime.strptime(bookRequest["date"], "%Y-%m-%d")
+            if reqId in oldIds:
+                if oldIds[reqId] == "done":
+                    bookRequest["state"] = "done"
+                    changedRequest.append(reqId)
                 continue
-            lastEntry = lastRow + idx
-            oldRequests.append(value)
-            if len(value) > idIdx and len(value[idIdx]) > 0:
-                oldIds[value[idIdx]] = value[stateIdx] if len(value) > stateIdx else ""
-            added = True
-        lastRow += len(values)
-        if len(values) < BATCH_SIZE:
-            break
-        if added == 0:
-            break
+            userId = bookRequest["user_id"]
+            if userId in request.users:
+                name = request.users[userId]["name"]
+            else:
+                name = ""
+            print(date)
+            print(date.strftime("%m/%d/%Y"))
+            data = [None] * (maxColumn + 1)
+            entry = dict()
+            entry[text["id"]] = reqId
+            entry[text["date"]] = date.strftime("%m/%d/%Y")
+            entry[text["requester"]] = userId
+            entry[text["name"]] = name
+            entry[text["title"]] = bookRequest["title"]
+            entry[text["author"]] = bookRequest["author"]
+            entry[text["publisher"]] = bookRequest["publisher"]
+            entry[text["note"]] = bookRequest["note"]
+            for label in labelIdx:
+                if label not in entry or label not in labelIdx:
+                    continue
+                i = labelIdx[label]
+                data[i] = entry[label]
 
-    print(f"Read {len(oldRequests)} requests")
-
-    idx = lastEntry + 1
-    added = 0
-    for bookRequest in bookRequests:
-        reqId = bookRequest['_id']
-        date = datetime.datetime.strptime(bookRequest["date"], "%Y-%m-%d")
-        if reqId in oldIds:
-            if oldIds[reqId] == "done":
-                bookRequest["state"] = "done"
-                changedRequest.append(reqId)
-            continue
-        userId = bookRequest["user_id"]
-        if userId in request.users:
-            name = request.users[userId]["name"]
-        else:
-            name = ""
-        print(date)
-        print(date.strftime("%m/%d/%Y"))
-        data = [None] * (maxColumn + 1)
-        entry = dict()
-        entry[text["id"]] = reqId
-        entry[text["date"]] = date.strftime("%m/%d/%Y")
-        entry[text["requester"]] = userId
-        entry[text["name"]] = name
-        entry[text["title"]] = bookRequest["title"]
-        entry[text["author"]] = bookRequest["author"]
-        entry[text["publisher"]] = bookRequest["publisher"]
-        entry[text["note"]] = bookRequest["note"]
-        for label in labelIdx:
-            if label not in entry or label not in labelIdx:
-                continue
-            i = labelIdx[label]
-            data[i] = entry[label]
-
-#        sheet.update(sheetId, f"BookRequest!A{idx}:Z{idx}", [data])
-        sheet.update(sheetId, f"A{idx}:Z{idx}", [data])
-        added += 1
-        idx += 1
-    print(f"{added} requests added")
+    #        sheet.update(sheetId, f"BookRequest!A{idx}:Z{idx}", [data])
+            sheet.update(sheetId, f"A{idx}:Z{idx}", [data])
+            added += 1
+            idx += 1
+        print(f"{added} requests added")
 
     updateCloud([list(), changedRequest, list()], request.requests, db.requestDb)
     updateCloud([list(), changedRent, list()], request.rents, db.rentDb)

@@ -36,13 +36,12 @@ if __name__ == "__main__":
     client = SQSClient(sqsConfig)
     msgs = client.PopQueue()
 
-    print(db.mdRequest)
-
     reqToCheck = dict()
     for key in db.mdRequest:
         req = db.mdRequest[key]
         if req['state'] != 'pending':
             continue
+        print(req)
         if req['action'] == 'extend':
             userId = req['user_id']
             bookId = req['book_id']
@@ -50,7 +49,8 @@ if __name__ == "__main__":
                 reqToCheck[userId].add(bookId)
             else:
                 reqToCheck[userId] = {bookId}
-    print(reqToCheck)
+    for key in reqToCheck:
+        print(f"{key}: {reqToCheck[key]}")
     msgDict = dict()
     for msg in msgs:
         userId = msg['user_id']
