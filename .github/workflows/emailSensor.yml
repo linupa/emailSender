@@ -2,9 +2,9 @@ name: email-sender
 
 on:
   schedule:
-    - cron: '0 18 * * *'
+    - cron: '0 22 * * *'
       timeszone: 'America/Los_Angeles'
-    - cron: '0 0/3 * * *'
+    - cron: '0 */3 * * *'
 
 jobs:
     run-email-sender:
@@ -25,7 +25,7 @@ jobs:
               run: pip install -r requirements.txt
 
             - name: execute timeChecker script daily
-              if: github.event.schedule == '0 18 * * *'
+              if: github.event.schedule == '0 22 * * *'
               env:
                 MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
                 MAIL_TOKEN: ${{ secrets.MAIL_TOKEN }}
